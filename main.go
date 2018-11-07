@@ -282,5 +282,6 @@ func getAuditInfo2(id string, body string) []byte {
 }
 
 func main() {
-
+	http.ListenAndServe("8080")
+	fmt.Println("server running!")
 }
