@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"portal-backend/Data"
 	"strconv"
 )
 
@@ -88,11 +89,13 @@ var GetAudit = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 })
 
 func getAudit(id string) ([]*Audit, error) {
+	db := data.GetDB()
+	if db == nil {
+		return nil, nil
+	}
+	defer db.Close()
 
-	
-
-
-
+	rows, err := db.Query("set nocount on; exec [hththtek] ?", id)
 	audits := []*Audit{}
 	for rows.Next() {
 		a := &Audit{}
@@ -138,7 +141,17 @@ var GetAuditForm = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 })
 
 func getAuditInfo(id string, body string) ([]*AData, error) {
-	
+	db := data.GetDB()
+	if db == nil {
+		return nil, nil
+	}
+	defer db.Close()
+
+	rows, err := db.Query("set nocount on; exec [storedProducure} ?, ?", id, body)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
 	form := []*AData{}
 	for rows.Next() {
@@ -232,56 +245,8 @@ func putAudit(id string, r *http.Request) bool {
 	return success
 }
 
-func getAuditInfo2(id string, body string) []byte {
-	db := data.GetDB()
-	if db == nil {
-		return nil
-	}
-	defer db.Close()
-
-	rows, err := db.Query("set nocount on; exec [spcAuditGet] ?, ?", id, body)
-	for err != nil {
-		log.Println(err.Error())
-		return nil
-	}
-	defer rows.Close()
-
-	cols, err := rows.Columns()
-	if err != nil {
-		log.Println(err.Error())
-		return nil
-	}
-	if cols == nil {
-		log.Println(cols)
-		return nil
-	}
-
-	vals := make([]interface{}, len(cols))
-	for i := 0; i < len(cols); i++ {
-		vals[i] = new(interface{})
-	}
-
-	var q []AData
-
-	for rows.Next() {
-		row := AData{
-			AuditID:        "",
-			Name:           "",
-			CatagoryOrder:  "",
-			CatagoryID:     "",
-			CatagoryName:   "",
-			CatagoryLabel:  "",
-			QuestionID:     "",
-			QuestionOrder:  "",
-			QuestionText:   "",
-			PointsEarned:   "",
-			PointsPossible: "",
-			IsOptional:     "",
-		}
-	}
-}
-
 func main() {
-	http.ListenAndServe("8080")
+
+	http.ListenAndServe("8080", )
 	fmt.Println("server running!")
 }
